@@ -74,7 +74,7 @@ export class TodoApp extends Component {
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <DatePicker
                         id="due-date"
-                        selected={this.state.dueDate}
+                        value={this.state.dueDate}
                         onChange={this.handleDateChange}>
                     </DatePicker>
                     </MuiPickersUtilsProvider>
@@ -154,9 +154,9 @@ export class TodoApp extends Component {
         });
     }
 
-    handleDateChange(date) {
+    handleDateChange(e) {
         this.setState({
-            dueDate: date
+            dueDate: moment ( e )
         });
     }
 
@@ -166,7 +166,6 @@ export class TodoApp extends Component {
 
         if (!this.state.description.length || !this.state.status.length || !this.state.dueDate || !this.state.responsibleEmail || !this.state.responsibleName){
             console.log(this.state);
-            alert("nooo");
             return;
         }
 

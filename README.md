@@ -20,6 +20,12 @@
 [![Heroku](https://www.herokucdn.com/deploy/button.png)](https://react-todo-jg.herokuapp.com/)
 
 
+## Despliegue en AWS 
+
+```
+https://master.d3jj17t9ak47fa.amplifyapp.com/
+```
+
 React project using Material-UI library.
 
 ## Part 1: Create a Login Component

@@ -23,8 +23,10 @@
 }
 
 .todo-form {
+    position: fixed;
     border: 1px solid lightsteelblue;
-    margin: auto;
+    margin-left: 20%;
+    margin-top: 0%;
     width: 60%;
     padding: 20px;
     text-align: center;

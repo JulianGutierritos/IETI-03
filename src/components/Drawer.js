@@ -42,6 +42,11 @@ export class MyDrawer extends Component {
                     </IconButton>  
                 </Toolbar>
                 <Drawer variant='persistent' anchor='left' open={this.state.open}>
+                    <Toolbar>
+                        <IconButton onClick={() => { this.handleChangeOpen() }}>
+                                <ReorderIcon/>
+                        </IconButton>  
+                    </Toolbar>
                     <div style={{display : 'flex'}}>
                     </div>
                     <UserInfo/>

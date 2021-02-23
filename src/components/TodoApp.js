@@ -9,18 +9,28 @@ import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import  DateFnsUtils  from "@date-io/date-fns";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { MyDrawer } from './Drawer'
+import { MyDrawer } from './Drawer';
+import Todos from './Data';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import IconButton from '@material-ui/core/IconButton'
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import Typography from '@material-ui/core/Typography';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 export class TodoApp extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {items: [], text: '', priority: 0, dueDate: moment()};
-        this.handleTextChange = this.handleTextChange.bind(this);
-        this.handlePriorityChange = this.handlePriorityChange.bind(this);
+        this.state = {items: Todos, description: '', status: "In Progress", dueDate: moment(), responsibleName: '', responsibleEmail : '', hiddenForm : true};
+        this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
+        this.handleStatusChange = this.handleStatusChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleLogOut = this.handleLogOut.bind(this);
+        this.handleChangeHiddenForm = this.handleChangeHiddenForm.bind(this);
+        this.handleResponsibleNameChange = this.handleResponsibleNameChange.bind(this);
+        this.handleResponsibleEmailChange = this.handleResponsibleEmailChange.bind(this);
     }
 
 
@@ -29,35 +39,38 @@ export class TodoApp extends Component {
         return (
             <Box className="TodoApp">
                 <MyDrawer handleLogOut={this.handleLogOut}/>
-                <form onSubmit={this.handleSubmit} className="todo-form">
+                <form onSubmit={this.handleSubmit} className="todo-form" hidden={this.state.hiddenForm}>
                 <Card>
                     <CardContent>
                     <h3>New TODO</h3>
-                    <label htmlFor="text" className="right-margin">
-                        Text:
+                    <label htmlFor="description" className="right-margin">
+                        Description:
                     </label>
 
                     <Input
-                        id="text"
-                        onChange={this.handleTextChange}
-                        value={this.state.text}>
+                        id="Description"
+                        onChange={this.handleDescriptionChange}
+                        value={this.state.description}>
                     </Input>
 
                     <br/>
                     <br/>
-                    <label htmlFor="priority" className="right-margin">
-                        Priority:
+                    <label htmlFor="status" className="right-margin">
+                        Status:
                     </label>
 
-                    <Input
-                        id="priority"
-                        type="number"
-                        onChange={this.handlePriorityChange}
-                        value={this.state.priority}>
-                    </Input>
+                    <Select
+                        id="status"
+                        type="string"
+                        onChange={this.handleStatusChange}
+                        value={this.state.status}>
+                        
+                        <MenuItem value={"In Progress"}>In Proggress</MenuItem>
+                        <MenuItem value={"Ready"}>Ready</MenuItem>
+                    </Select>
+
                     <br/>
                     <br/>
-                    
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <DatePicker
                         id="due-date"
@@ -65,6 +78,33 @@ export class TodoApp extends Component {
                         onChange={this.handleDateChange}>
                     </DatePicker>
                     </MuiPickersUtilsProvider>
+
+                    <h3>Responsible</h3>
+
+                    <label htmlFor="description" className="right-margin">
+                        Name:
+                    </label>
+
+                    <Input
+                        id="ResponsibleName"
+                        onChange={this.handleResponsibleNameChange}
+                        value={this.state.responsibleName}>
+                    </Input>
+
+                    <br/>
+                    <br/>
+
+                    <label htmlFor="email" className="right-margin">
+                        Email:
+                    </label>
+
+                    <Input
+                        id="ResponsibleEmail"
+                        autoComplete="email" 
+                        autoFocus
+                        onChange={this.handleResponsibleEmailChange}
+                        value={this.state.responsibleEmail}>
+                    </Input>
 
                     <br/>
                     <Button  type='submit'>
@@ -75,20 +115,42 @@ export class TodoApp extends Component {
                 </form>
                 <br/>
                 <br/>
+                <div hidden={!this.state.hiddenForm}>
+                <Typography variant="h2" >TODOS</Typography>
                 <TodoList todoList={this.state.items}/>
+                </div>
+                <IconButton style={{position:'fixed', left:'90%', top:'90%'}} onClick={() => { this.handleChangeHiddenForm() }}>
+                    { this.state.hiddenForm  
+                    ? <AddBoxIcon style={{color:'green', fontSize:'50px'}}>
+                    </AddBoxIcon>
+                    : <VisibilityIcon style={{color:'green', fontSize:'50px'}}>
+                    </VisibilityIcon> }
+                </IconButton>
             </Box>
         );
     }
 
-    handleTextChange(e) {
+    handleResponsibleEmailChange(e){
         this.setState({
-            text: e.target.value
+            responsibleEmail : e.target.value
         });
     }
 
-    handlePriorityChange(e) {
+    handleResponsibleNameChange(e){
         this.setState({
-            priority: e.target.value
+            responsibleName : e.target.value
+        });
+    }
+
+    handleDescriptionChange(e) {
+        this.setState({
+            description: e.target.value
+        });
+    }
+
+    handleStatusChange(e) {
+        this.setState({
+            status: e.target.value
         });
     }
 
@@ -102,27 +164,50 @@ export class TodoApp extends Component {
 
         e.preventDefault();
 
-        if (!this.state.text.length || !this.state.priority.length || !this.state.dueDate){
+        if (!this.state.description.length || !this.state.status.length || !this.state.dueDate || !this.state.responsibleEmail || !this.state.responsibleName){
+            console.log(this.state);
+            alert("nooo");
             return;
         }
 
         const newItem = {
-            text: this.state.text,
-            priority: this.state.priority,
+            description: this.state.description,
+            status: this.state.status,
             dueDate: this.state.dueDate,
-
+            responsible : {email : this.state.responsibleEmail, name : this.state.responsibleName}
         };
         this.setState(prevState => ({
             items: prevState.items.concat(newItem),
-            text: '',
-            priority: '',
-            dueDate: moment()
+            description: '',
+            status: "In Progress",
+            dueDate: moment(),
+            responsibleEmail : '',
+            responsibleName : '',
+            hiddenForm : true
         }));
     }
 
     handleLogOut(){
         localStorage.isLoggedIn = "false";
         this.props.handleChangeIsLoggedOut();
+    }
+
+    handleChangeHiddenForm(){
+        if (this.state.hiddenForm){
+            this.setState({
+                hiddenForm : false,
+            });
+        }
+        else{
+            this.setState({
+                hiddenForm : true,
+                description: '',
+                status: "In Progress",
+                dueDate: moment(),
+                responsibleEmail : '',
+                responsibleName : ''
+            });
+        }
     }
 
 }
